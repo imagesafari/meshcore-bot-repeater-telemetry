@@ -1,0 +1,9 @@
+# Add under scrape_configs: in prometheus.yml.
+# Values only change once per poll (default every 4 minutes), so 60s is plenty.
+scrape_configs:
+  - job_name: "meshcore-repeaters"
+    scrape_interval: 60s
+    static_configs:
+      - targets: ["<bot-host>:9108"]
+        labels:
+          instance: "<bot-host-name>"

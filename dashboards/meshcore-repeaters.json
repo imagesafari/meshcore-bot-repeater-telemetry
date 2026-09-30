@@ -1,0 +1,791 @@
+{
+  "uid": "meshcore-repeaters",
+  "title": "MeshCore Repeaters",
+  "description": "MeshCore repeater status and telemetry, polled over the air by the meshcore-bot repeater-telemetry plugin. Set the lat/lon variables (Dashboard settings > Variables) to your site for correct day/night shading.",
+  "tags": [
+    "meshcore",
+    "radio"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 8,
+  "refresh": "1m",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "repeater",
+        "label": "Repeater",
+        "datasource": "Prometheus",
+        "query": {
+          "query": "label_values(meshcore_repeater_battery_volts, repeater)",
+          "refId": "rep"
+        },
+        "definition": "label_values(meshcore_repeater_battery_volts, repeater)",
+        "includeAll": true,
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "refresh": 2
+      },
+      {
+        "type": "constant",
+        "name": "lat",
+        "label": "Latitude",
+        "hide": 2,
+        "query": "51.4779",
+        "current": {
+          "text": "51.4779",
+          "value": "51.4779"
+        },
+        "description": "Latitude of your site, decimal degrees (for day/night shading)"
+      },
+      {
+        "type": "constant",
+        "name": "lon",
+        "label": "Longitude",
+        "hide": 2,
+        "query": "-0.0015",
+        "current": {
+          "text": "-0.0015",
+          "value": "-0.0015"
+        },
+        "description": "Longitude of your site, decimal degrees (for day/night shading)"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "row",
+      "title": "Overview",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": [],
+      "id": 1
+    },
+    {
+      "type": "stat",
+      "title": "Battery",
+      "description": "",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "volt",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 3.5
+              },
+              {
+                "color": "green",
+                "value": 3.7
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "meshcore_repeater_battery_volts{repeater=~\"$repeater\"}",
+          "legendFormat": "{{repeater}}"
+        }
+      ],
+      "id": 2
+    },
+    {
+      "type": "stat",
+      "title": "Noise floor",
+      "description": "",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dBm",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "meshcore_repeater_noise_floor_dbm{repeater=~\"$repeater\"}",
+          "legendFormat": "{{repeater}}"
+        }
+      ],
+      "id": 3
+    },
+    {
+      "type": "stat",
+      "title": "Uptime",
+      "description": "",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "meshcore_repeater_uptime_seconds{repeater=~\"$repeater\"}",
+          "legendFormat": "{{repeater}}"
+        }
+      ],
+      "id": 4
+    },
+    {
+      "type": "stat",
+      "title": "Last successful poll",
+      "description": "Seconds since the bot last got an answer. Polls run every 4 minutes.",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 600
+              },
+              {
+                "color": "red",
+                "value": 1200
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "time() - meshcore_repeater_last_success_timestamp_seconds{repeater=~\"$repeater\"}",
+          "legendFormat": "{{repeater}}"
+        }
+      ],
+      "id": 5
+    },
+    {
+      "type": "row",
+      "title": "Power",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "panels": [],
+      "id": 6
+    },
+    {
+      "type": "timeseries",
+      "title": "Battery voltage and %",
+      "description": "Battery % uses MeshCore's on-device formula: a straight line from 3.0 V (0%) to 4.2 V (100%), rounded down and clamped. Repeaters only report voltage, so the dashboard converts it. Above 4.2 V (e.g. while charging) % holds at 100 while voltage still moves. Pale yellow bands mark daylight (sunrise to sunset at the lat/lon variables, computed in the query with NOAA's solar formulas, within a few minutes). The % axis scales to the data in view.",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 0,
+        "y": 6
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "volt",
+          "custom": {
+            "lineWidth": 2,
+            "spanNulls": true,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "custom.lineInterpolation",
+                "value": "stepAfter"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 0
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 12
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FADE2A"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "hidden"
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 1
+              },
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "meshcore_repeater_battery_volts{repeater=~\"$repeater\"}",
+          "legendFormat": "{{repeater}}"
+        },
+        {
+          "refId": "B",
+          "expr": "clamp(floor((meshcore_repeater_battery_volts{repeater=~\"$repeater\"} * 1000 - 3000) * 100 / 1200), 0, 100)",
+          "legendFormat": "{{repeater}} %"
+        },
+        {
+          "refId": "C",
+          "legendFormat": "daylight",
+          "expr": "(((abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)) <= bool 12) * abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)) + (abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)) > bool 12) * (24 - abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)))) < bool (deg(acos((sin(rad(vector(-0.833))) - sin(rad(vector($lat))) * sin((0.006918 - 0.399912 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.070257 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.006758 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.000907 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.002697 * cos(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.00148 * sin(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24)))))) / (cos(rad(vector($lat))) * cos((0.006918 - 0.399912 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.070257 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.006758 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.000907 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.002697 * cos(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.00148 * sin(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24)))))))) / 15))"
+        }
+      ],
+      "id": 7
+    },
+    {
+      "type": "timeseries",
+      "title": "MCU temperature",
+      "description": "",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 6
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "custom": {
+            "lineWidth": 2,
+            "spanNulls": true,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "meshcore_repeater_temperature_celsius{repeater=~\"$repeater\"}",
+          "legendFormat": "{{repeater}} ch{{channel}}"
+        }
+      ],
+      "id": 8
+    },
+    {
+      "type": "state-timeline",
+      "title": "Charging / discharging (inferred)",
+      "description": "Inferred from the battery voltage trend (slope over the last 2 h): Charging above +5 mV/h, Discharging below -5 mV/h, otherwise Flat / full (e.g. the charger holding a full battery). The Tower V2 has no charge-status signal, so this is an estimate, not a measurement.",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "legendFormat": "{{repeater}}",
+          "expr": "(deriv(meshcore_repeater_battery_volts{repeater=~\"$repeater\"}[2h]) * 3600 * 1000 > bool 5) - (deriv(meshcore_repeater_battery_volts{repeater=~\"$repeater\"}[2h]) * 3600 * 1000 < bool -5)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "Charging",
+                  "color": "green",
+                  "index": 0
+                },
+                "0": {
+                  "text": "Flat / full",
+                  "color": "blue",
+                  "index": 1
+                },
+                "-1": {
+                  "text": "Discharging",
+                  "color": "orange",
+                  "index": 2
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "showValue": "never",
+        "mergeValues": true,
+        "rowHeight": 0.8,
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "id": 9
+    },
+    {
+      "type": "row",
+      "title": "Radio",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "panels": [],
+      "id": 10
+    },
+    {
+      "type": "timeseries",
+      "title": "Noise floor",
+      "description": "",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 19
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dBm",
+          "custom": {
+            "lineWidth": 2,
+            "spanNulls": true,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "meshcore_repeater_noise_floor_dbm{repeater=~\"$repeater\"}",
+          "legendFormat": "{{repeater}}"
+        }
+      ],
+      "id": 11
+    },
+    {
+      "type": "timeseries",
+      "title": "Last packet RSSI / SNR",
+      "description": "Signal of whatever packet the repeater heard last before each poll, so it jumps between senders.",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 19
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "lineWidth": 2,
+            "spanNulls": true,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "meshcore_repeater_last_rssi_dbm{repeater=~\"$repeater\"}",
+          "legendFormat": "{{repeater}} RSSI (dBm)"
+        },
+        {
+          "refId": "B",
+          "expr": "meshcore_repeater_last_snr_db{repeater=~\"$repeater\"}",
+          "legendFormat": "{{repeater}} SNR (dB)"
+        }
+      ],
+      "id": 12
+    },
+    {
+      "type": "row",
+      "title": "Traffic",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 27
+      },
+      "panels": [],
+      "id": 13
+    },
+    {
+      "type": "timeseries",
+      "title": "Packets per minute",
+      "description": "",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 28
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "lineWidth": 2,
+            "spanNulls": true,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(meshcore_repeater_packets_received_total{repeater=~\"$repeater\"}[15m]) * 60",
+          "legendFormat": "{{repeater}} rx {{route}}"
+        },
+        {
+          "refId": "B",
+          "expr": "rate(meshcore_repeater_packets_sent_total{repeater=~\"$repeater\"}[15m]) * 60",
+          "legendFormat": "{{repeater}} tx {{route}}"
+        }
+      ],
+      "id": 14
+    },
+    {
+      "type": "timeseries",
+      "title": "Airtime (% of time)",
+      "description": "",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "lineWidth": 2,
+            "spanNulls": true,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(meshcore_repeater_airtime_seconds_total{repeater=~\"$repeater\"}[15m]) * 100",
+          "legendFormat": "{{repeater}} {{dir}}"
+        }
+      ],
+      "id": 15
+    },
+    {
+      "type": "timeseries",
+      "title": "Duplicates and receive errors per minute",
+      "description": "",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "lineWidth": 2,
+            "spanNulls": true,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(meshcore_repeater_duplicates_total{repeater=~\"$repeater\"}[15m]) * 60",
+          "legendFormat": "{{repeater}} dups {{route}}"
+        },
+        {
+          "refId": "B",
+          "expr": "rate(meshcore_repeater_receive_errors_total{repeater=~\"$repeater\"}[15m]) * 60",
+          "legendFormat": "{{repeater}} rx errors"
+        }
+      ],
+      "id": 16
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      },
+      {
+        "name": "Sunrise",
+        "enable": true,
+        "iconColor": "#FF9830",
+        "datasource": "Prometheus",
+        "expr": "((((abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)) <= bool 12) * abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)) + (abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)) > bool 12) * (24 - abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)))) < bool (deg(acos((sin(rad(vector(-0.833))) - sin(rad(vector($lat))) * sin((0.006918 - 0.399912 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.070257 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.006758 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.000907 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.002697 * cos(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.00148 * sin(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24)))))) / (cos(rad(vector($lat))) * cos((0.006918 - 0.399912 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.070257 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.006758 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.000907 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.002697 * cos(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.00148 * sin(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24)))))))) / 15)) - (((abs(((vector(time() - 60) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))))) / 60)) <= bool 12) * abs(((vector(time() - 60) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))))) / 60)) + (abs(((vector(time() - 60) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))))) / 60)) > bool 12) * (24 - abs(((vector(time() - 60) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))))) / 60)))) < bool (deg(acos((sin(rad(vector(-0.833))) - sin(rad(vector($lat))) * sin((0.006918 - 0.399912 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.070257 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.006758 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.000907 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.002697 * cos(3 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.00148 * sin(3 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24)))))) / (cos(rad(vector($lat))) * cos((0.006918 - 0.399912 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.070257 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.006758 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.000907 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.002697 * cos(3 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.00148 * sin(3 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24)))))))) / 15))) > 0",
+        "step": "60s",
+        "titleFormat": "Sunrise",
+        "textFormat": "sunrise",
+        "useValueForTime": false
+      },
+      {
+        "name": "Sunset",
+        "enable": true,
+        "iconColor": "#5794F2",
+        "datasource": "Prometheus",
+        "expr": "((((abs(((vector(time() - 60) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))))) / 60)) <= bool 12) * abs(((vector(time() - 60) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))))) / 60)) + (abs(((vector(time() - 60) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))))) / 60)) > bool 12) * (24 - abs(((vector(time() - 60) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))))) / 60)))) < bool (deg(acos((sin(rad(vector(-0.833))) - sin(rad(vector($lat))) * sin((0.006918 - 0.399912 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.070257 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.006758 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.000907 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.002697 * cos(3 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.00148 * sin(3 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24)))))) / (cos(rad(vector($lat))) * cos((0.006918 - 0.399912 * cos((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.070257 * sin((2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.006758 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.000907 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) - 0.002697 * cos(3 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24))) + 0.00148 * sin(3 * (2 * pi() / 365 * (day_of_year(vector(time() - 60)) - 1 + (((vector(time() - 60) % 86400) / 3600) - 12) / 24)))))))) / 15)) - (((abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)) <= bool 12) * abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)) + (abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)) > bool 12) * (24 - abs(((vector(time()) % 86400) / 3600) - (12 - ($lon) / 15 - (229.18 * (0.000075 + 0.001868 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.032077 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.014615 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.040849 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))))) / 60)))) < bool (deg(acos((sin(rad(vector(-0.833))) - sin(rad(vector($lat))) * sin((0.006918 - 0.399912 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.070257 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.006758 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.000907 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.002697 * cos(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.00148 * sin(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24)))))) / (cos(rad(vector($lat))) * cos((0.006918 - 0.399912 * cos((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.070257 * sin((2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.006758 * cos(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.000907 * sin(2 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) - 0.002697 * cos(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24))) + 0.00148 * sin(3 * (2 * pi() / 365 * (day_of_year(vector(time())) - 1 + (((vector(time()) % 86400) / 3600) - 12) / 24)))))))) / 15))) > 0",
+        "step": "60s",
+        "titleFormat": "Sunset",
+        "textFormat": "sunset",
+        "useValueForTime": false
+      }
+    ]
+  }
+}
