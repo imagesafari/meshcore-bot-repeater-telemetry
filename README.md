@@ -107,4 +107,4 @@ Built on [MeshCore](https://github.com/meshcore-dev/MeshCore), [meshcore-bot](ht
 
 ## License
 
-[GLWTPL](LICENSE). Good luck.
+[GLWTPL](LICENSE) — the [Good Luck With That Public License](https://github.com/me-shaon/GLWTPL).
