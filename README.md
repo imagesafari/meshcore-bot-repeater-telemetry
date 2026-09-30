@@ -1,4 +1,4 @@
-# meshcore-repeater-telemetry
+# meshcore-bot-repeater-telemetry
 
 > **Note:** this is 100% vibecoded. It works great for me, but your mileage may
 > vary. Proceed accordingly.
