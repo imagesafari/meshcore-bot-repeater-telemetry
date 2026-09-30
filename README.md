@@ -1,5 +1,8 @@
 # meshcore-repeater-telemetry
 
+> **Note:** this is 100% vibecoded. It works great for me, but your mileage may
+> vary. Proceed accordingly.
+
 Graph your [MeshCore](https://github.com/meshcore-dev/MeshCore) repeaters in Grafana: battery, noise floor, signal, traffic and airtime. The repeaters are polled over the air by the companion radio your [meshcore-bot](https://github.com/agessaman/meshcore-bot) already runs.
 
 ![MeshCore Repeaters dashboard](screenshots/dashboard.png)
